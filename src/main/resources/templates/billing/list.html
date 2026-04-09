@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Billing</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-dark bg-danger">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">🏥 Hospital MS</a>
+        <div class="navbar-nav ms-auto flex-row gap-3">
+            <a class="nav-link text-white" href="/patients">Patients</a>
+            <a class="nav-link text-white" href="/doctors">Doctors</a>
+            <a class="nav-link text-white" href="/appointments">Appointments</a>
+            <a class="nav-link text-white" href="/billing">Billing</a>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Billing</h3>
+        <div class="d-flex gap-2">
+            <a href="/billing/unpaid" class="btn btn-outline-danger">View Unpaid</a>
+            <a href="/billing/add" class="btn btn-danger">+ Create Bill</a>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover bg-white">
+        <thead class="table-danger">
+            <tr>
+                <th>ID</th><th>Patient</th><th>Amount</th>
+                <th>Description</th><th>Date</th><th>Status</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="bill : ${bills}">
+                <td th:text="${bill.id}"></td>
+                <td th:text="${bill.patient.name}"></td>
+                <td th:text="'₹' + ${bill.amount}"></td>
+                <td th:text="${bill.description}"></td>
+                <td th:text="${bill.billingDate}"></td>
+                <td>
+                    <span th:if="${bill.paid}" class="badge bg-success">Paid</span>
+                    <span th:unless="${bill.paid}" class="badge bg-danger">Unpaid</span>
+                </td>
+                <td>
+                    <a th:if="${!bill.paid}"
+                       th:href="@{/billing/pay/{id}(id=${bill.id})}"
+                       class="btn btn-sm btn-success">Mark Paid</a>
+                    <a th:href="@{/billing/delete/{id}(id=${bill.id})}"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Delete this bill?')">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
