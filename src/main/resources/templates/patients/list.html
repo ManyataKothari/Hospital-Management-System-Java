@@ -9,11 +9,14 @@
 <nav class="navbar navbar-dark bg-primary">
     <div class="container">
         <a class="navbar-brand fw-bold" href="/">🏥 Hospital MS</a>
-        <div class="navbar-nav ms-auto flex-row gap-3">
+        <div class="navbar-nav ms-auto flex-row align-items-center gap-3">
             <a class="nav-link text-white" href="/patients">Patients</a>
             <a class="nav-link text-white" href="/doctors">Doctors</a>
             <a class="nav-link text-white" href="/appointments">Appointments</a>
             <a class="nav-link text-white" href="/billing">Billing</a>
+            <form th:action="@{/logout}" method="post" class="mb-0">
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
         </div>
     </div>
 </nav>
@@ -23,17 +26,22 @@
         <a href="/patients/add" class="btn btn-primary">+ Add Patient</a>
     </div>
 
-    <!-- Search -->
     <form action="/patients/search" method="get" class="d-flex gap-2 mb-3">
-        <input type="text" name="name" class="form-control" placeholder="Search by name...">
+        <input type="text" name="name" class="form-control"
+               placeholder="Search by name...">
         <button type="submit" class="btn btn-outline-primary">Search</button>
     </form>
 
     <table class="table table-bordered table-hover bg-white">
         <thead class="table-primary">
             <tr>
-                <th>ID</th><th>Name</th><th>Age</th><th>Gender</th>
-                <th>Blood Group</th><th>Phone</th><th>Actions</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Blood Group</th>
+                <th>Phone</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -45,9 +53,13 @@
                 <td th:text="${patient.bloodGroup}"></td>
                 <td th:text="${patient.phone}"></td>
                 <td>
-                    <a th:href="@{/patients/edit/{id}(id=${patient.id})}" class="btn btn-sm btn-warning">Edit</a>
-                    <a th:href="@{/patients/delete/{id}(id=${patient.id})}" class="btn btn-sm btn-danger"
-                       onclick="return confirm('Delete this patient?')">Delete</a>
+                    <a th:href="@{/patients/history/{id}(id=${patient.id})}"
+                       class="btn btn-sm btn-info">History</a>
+                    <a th:href="@{/patients/edit/{id}(id=${patient.id})}"
+                       class="btn btn-sm btn-warning">Edit</a>
+                    <a th:href="@{/patients/delete/{id}(id=${patient.id})}"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Delete this patient and all their records?')">Delete</a>
                 </td>
             </tr>
         </tbody>
