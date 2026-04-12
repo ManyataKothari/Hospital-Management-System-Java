@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient History</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .section-header {
+            background: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">🏥 Hospital MS</a>
+        <div class="navbar-nav ms-auto flex-row align-items-center gap-3">
+            <a class="nav-link text-white" href="/patients">Patients</a>
+            <a class="nav-link text-white" href="/doctors">Doctors</a>
+            <a class="nav-link text-white" href="/appointments">Appointments</a>
+            <a class="nav-link text-white" href="/billing">Billing</a>
+            <form th:action="@{/logout}" method="post" class="mb-0">
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <!-- Back button + action buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="/patients" class="btn btn-outline-secondary btn-sm">← Back to Patients</a>
+        <div class="d-flex gap-2">
+            <a th:href="@{/appointments/add(patientId=${patient.id})}"
+               class="btn btn-warning btn-sm">+ Book Appointment</a>
+            <a th:href="@{/billing/add(patientId=${patient.id})}"
+               class="btn btn-danger btn-sm">+ Create Bill</a>
+        </div>
+    </div>
+
+    <!-- Patient Info Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-1">
+                    <div style="width:60px;height:60px;border-radius:50%;background:#0d6efd;
+                                display:flex;align-items:center;justify-content:center;
+                                color:white;font-size:22px;font-weight:500;">
+                        <span th:text="${#strings.substring(patient.name, 0, 1)}"></span>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <h4 class="fw-bold mb-1" th:text="${patient.name}"></h4>
+                    <p class="text-muted mb-0">
+                        <span th:text="${patient.gender}"></span> |
+                        Age: <span th:text="${patient.age}"></span> |
+                        Blood Group: <span th:text="${patient.bloodGroup}"></span>
+                    </p>
+                    <p class="text-muted mb-0">
+                        Phone: <span th:text="${patient.phone}"></span> |
+                        Email: <span th:text="${patient.email}"></span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <div class="bg-primary text-white rounded p-2">
+                                <h5 class="mb-0 fw-bold" th:text="${#lists.size(appointments)}">0</h5>
+                                <small>Appointments</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-danger text-white rounded p-2">
+                                <h5 class="mb-0 fw-bold" th:text="'₹' + ${totalBilled}">0</h5>
+                                <small>Total Billed</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-warning text-white rounded p-2">
+                                <h5 class="mb-0 fw-bold" th:text="'₹' + ${totalDue}">0</h5>
+                                <small>Amount Due</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Section -->
+    <div class="section-header">
+        <h5 class="mb-0 fw-bold">Appointment History</h5>
+    </div>
+
+    <div th:if="${#lists.isEmpty(appointments)}" class="alert alert-info">
+        No appointments found for this patient.
+    </div>
+
+    <table th:unless="${#lists.isEmpty(appointments)}"
+           class="table table-bordered table-hover bg-white mb-4">
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>Doctor</th>
+                <th>Specialization</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="apt : ${appointments}">
+                <td th:text="${apt.id}"></td>
+                <td th:text="'Dr. ' + ${apt.doctor.name}"></td>
+                <td th:text="${apt.doctor.specialization}"></td>
+                <td th:text="${apt.appointmentDate}"></td>
+                <td th:text="${apt.appointmentTime}"></td>
+                <td>
+                    <span th:text="${apt.status}"
+                          th:class="${apt.status == 'SCHEDULED'} ? 'badge bg-primary' :
+                                    (${apt.status == 'COMPLETED'} ? 'badge bg-success' :
+                                    'badge bg-danger')">
+                    </span>
+                </td>
+                <td th:text="${apt.notes}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Billing Section -->
+    <div class="section-header">
+        <h5 class="mb-0 fw-bold">Billing History</h5>
+    </div>
+
+    <div th:if="${#lists.isEmpty(bills)}" class="alert alert-info">
+        No bills found for this patient.
+    </div>
+
+    <table th:unless="${#lists.isEmpty(bills)}"
+           class="table table-bordered table-hover bg-white">
+        <thead class="table-danger">
+            <tr>
+                <th>Bill ID</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="bill : ${bills}">
+                <td th:text="${bill.id}"></td>
+                <td th:text="${bill.description}"></td>
+                <td th:text="'₹' + ${bill.amount}"></td>
+                <td th:text="${bill.billingDate}"></td>
+                <td>
+                    <span th:if="${bill.paid}" class="badge bg-success">Paid</span>
+                    <span th:unless="${bill.paid}" class="badge bg-danger">Unpaid</span>
+                </td>
+                <td>
+                    <a th:if="${!bill.paid}"
+                       th:href="@{/billing/pay/{id}(id=${bill.id})}"
+                       class="btn btn-sm btn-success">Mark Paid</a>
+                    <a th:href="@{/billing/print/{id}(id=${bill.id})}"
+                       class="btn btn-sm btn-info" target="_blank">Print Bill</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>
