@@ -9,11 +9,14 @@
 <nav class="navbar navbar-dark bg-success">
     <div class="container">
         <a class="navbar-brand fw-bold" href="/">🏥 Hospital MS</a>
-        <div class="navbar-nav ms-auto flex-row gap-3">
+        <div class="navbar-nav ms-auto flex-row align-items-center gap-3">
             <a class="nav-link text-white" href="/patients">Patients</a>
             <a class="nav-link text-white" href="/doctors">Doctors</a>
             <a class="nav-link text-white" href="/appointments">Appointments</a>
             <a class="nav-link text-white" href="/billing">Billing</a>
+            <form th:action="@{/logout}" method="post" class="mb-0">
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
         </div>
     </div>
 </nav>
@@ -23,7 +26,6 @@
         <a href="/doctors/add" class="btn btn-success">+ Add Doctor</a>
     </div>
 
-    <!-- Search -->
     <form action="/doctors/search" method="get" class="d-flex gap-2 mb-3">
         <input type="text" name="specialization" class="form-control" placeholder="Search by specialization...">
         <button type="submit" class="btn btn-outline-success">Search</button>
