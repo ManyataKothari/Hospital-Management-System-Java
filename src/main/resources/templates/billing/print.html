@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill Receipt</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background: #f8f9fa; }
+        .bill-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .hospital-header {
+            border-bottom: 3px solid #0d6efd;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        .bill-footer {
+            border-top: 2px dashed #dee2e6;
+            margin-top: 24px;
+            padding-top: 16px;
+        }
+        .amount-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid #0d6efd;
+        }
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .bill-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Print / Back buttons - hidden when printing -->
+<div class="no-print text-center mt-3 mb-2">
+    <button onclick="window.print()" class="btn btn-primary me-2">Print Bill</button>
+    <a href="/billing" class="btn btn-secondary">Back to Billing</a>
+</div>
+
+<div class="bill-container">
+
+    <!-- Hospital Header -->
+    <div class="hospital-header d-flex justify-content-between align-items-start">
+        <div>
+            <h2 class="fw-bold text-primary mb-1">🏥 City Hospital</h2>
+            <p class="text-muted mb-0" style="font-size:13px;">123 Healthcare Avenue, Mumbai, Maharashtra</p>
+            <p class="text-muted mb-0" style="font-size:13px;">Phone: +91 98765 43210 | Email: info@cityhospital.com</p>
+        </div>
+        <div class="text-end">
+            <h4 class="fw-bold mb-1">RECEIPT</h4>
+            <p class="text-muted mb-0" style="font-size:13px;">
+                Bill No: <strong th:text="'#' + ${bill.id}"></strong>
+            </p>
+            <p class="text-muted mb-0" style="font-size:13px;">
+                Date: <strong th:text="${bill.billingDate}"></strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Patient Details -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h6 class="text-muted mb-2">PATIENT DETAILS</h6>
+            <p class="mb-1 fw-bold" th:text="${bill.patient.name}"></p>
+            <p class="mb-1 text-muted" style="font-size:13px;">
+                Age: <span th:text="${bill.patient.age}"></span> |
+                Gender: <span th:text="${bill.patient.gender}"></span>
+            </p>
+            <p class="mb-1 text-muted" style="font-size:13px;">
+                Blood Group: <span th:text="${bill.patient.bloodGroup}"></span>
+            </p>
+            <p class="mb-1 text-muted" style="font-size:13px;">
+                Phone: <span th:text="${bill.patient.phone}"></span>
+            </p>
+        </div>
+        <div class="col-6" th:if="${bill.appointment != null}">
+            <h6 class="text-muted mb-2">APPOINTMENT DETAILS</h6>
+            <p class="mb-1 fw-bold"
+               th:text="'Dr. ' + ${bill.appointment.doctor.name}"></p>
+            <p class="mb-1 text-muted" style="font-size:13px;"
+               th:text="${bill.appointment.doctor.specialization}"></p>
+            <p class="mb-1 text-muted" style="font-size:13px;">
+                Date: <span th:text="${bill.appointment.appointmentDate}"></span>
+            </p>
+            <p class="mb-1 text-muted" style="font-size:13px;">
+                Time: <span th:text="${bill.appointment.appointmentTime}"></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Bill Details Table -->
+    <table class="table table-bordered mb-4">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Description</th>
+                <th class="text-end">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td th:text="${bill.description != null ? bill.description : 'Medical Services'}"></td>
+                <td class="text-end" th:text="'₹' + ${bill.amount}"></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" class="text-end fw-bold">Subtotal</td>
+                <td class="text-end" th:text="'₹' + ${bill.amount}"></td>
+            </tr>
+            <tr class="table-primary">
+                <td colspan="2" class="text-end fw-bold">Total Amount</td>
+                <td class="text-end fw-bold" th:text="'₹' + ${bill.amount}"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Amount + Status Box -->
+    <div class="amount-box mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <p class="mb-0 text-muted" style="font-size:13px;">Payment Status</p>
+                <span th:if="${bill.paid}"
+                      class="badge bg-success fs-6">PAID</span>
+                <span th:unless="${bill.paid}"
+                      class="badge bg-danger fs-6">UNPAID</span>
+            </div>
+            <div class="text-end">
+                <p class="mb-0 text-muted" style="font-size:13px;">Total Amount Due</p>
+                <h3 class="fw-bold text-primary mb-0"
+                    th:text="'₹' + ${bill.amount}"></h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bill-footer text-center text-muted" style="font-size:12px;">
+        <p class="mb-1">Thank you for choosing City Hospital.</p>
+        <p class="mb-0">This is a computer generated receipt and does not require a signature.</p>
+    </div>
+
+</div>
+
+</body>
+</html>
