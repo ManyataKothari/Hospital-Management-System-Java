@@ -25,7 +25,10 @@ public class Bill {
     private String description;
 
     // Constructors
-    public Bill() {}
+    public Bill() {
+        this.billingDate = LocalDate.now();
+        this.paid = false;
+    }
 
     public Bill(Patient patient, Appointment appointment, double amount, String description) {
         this.patient = patient;
@@ -48,8 +51,7 @@ public class Bill {
     // Method overriding
     @Override
     public String toString() {
-        return "Bill{id=" + id + ", patient=" + patient.getName() +
-               ", amount=" + amount + ", paid=" + paid + ", date=" + billingDate + "}";
+        return "Bill{id=" + id + ", amount=" + amount + ", paid=" + paid + "}";
     }
 
     // Getters and Setters
