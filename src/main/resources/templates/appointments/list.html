@@ -9,11 +9,14 @@
 <nav class="navbar navbar-dark bg-warning">
     <div class="container">
         <a class="navbar-brand fw-bold text-white" href="/">🏥 Hospital MS</a>
-        <div class="navbar-nav ms-auto flex-row gap-3">
+        <div class="navbar-nav ms-auto flex-row align-items-center gap-3">
             <a class="nav-link text-white" href="/patients">Patients</a>
             <a class="nav-link text-white" href="/doctors">Doctors</a>
             <a class="nav-link text-white" href="/appointments">Appointments</a>
             <a class="nav-link text-white" href="/billing">Billing</a>
+            <form th:action="@{/logout}" method="post" class="mb-0">
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
         </div>
     </div>
 </nav>
@@ -48,7 +51,7 @@
                     <a th:href="@{/appointments/cancel/{id}(id=${appointment.id})}" class="btn btn-sm btn-secondary"
                        onclick="return confirm('Cancel this appointment?')">Cancel</a>
                     <a th:href="@{/appointments/delete/{id}(id=${appointment.id})}" class="btn btn-sm btn-danger"
-                       onclick="return confirm('Delete this appointment?')">Delete</a>
+                       onclick="return confirm('Delete?')">Delete</a>
                 </td>
             </tr>
         </tbody>
