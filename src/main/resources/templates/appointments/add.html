@@ -4,33 +4,88 @@
     <meta charset="UTF-8">
     <title>Book Appointment</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .toggle-btn { cursor: pointer; }
+        .toggle-btn.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-dark bg-warning">
     <div class="container">
         <a class="navbar-brand fw-bold text-white" href="/">🏥 Hospital MS</a>
+        <div class="navbar-nav ms-auto flex-row align-items-center gap-3">
+            <a class="nav-link text-white" href="/patients">Patients</a>
+            <a class="nav-link text-white" href="/doctors">Doctors</a>
+            <a class="nav-link text-white" href="/appointments">Appointments</a>
+            <a class="nav-link text-white" href="/billing">Billing</a>
+            <form th:action="@{/logout}" method="post" class="mb-0">
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+        </div>
     </div>
 </nav>
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <h4 class="fw-bold mb-4">Book Appointment</h4>
-                    <form th:action="@{/appointments/add}" th:object="${appointment}" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Patient</label>
-                            <select class="form-select" th:field="*{patient}">
-                                <option value="">Select Patient</option>
-                                <option th:each="patient : ${patients}"
-                                        th:value="${patient.id}"
-                                        th:text="${patient.name}">
-                                </option>
-                            </select>
+
+                    <!-- Patient selection mode toggle -->
+                    <div class="mb-3">
+                        <label class="form-label fw-500">Patient Selection Mode</label>
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" id="btnAll"
+                                    class="btn btn-outline-primary toggle-btn active"
+                                    onclick="showAll()">All Patients</button>
+                            <button type="button" id="btnSpecific"
+                                    class="btn btn-outline-primary toggle-btn"
+                                    onclick="showSpecific()"
+                                    th:if="${selectedPatient != null}">
+                                Specific Patient
+                            </button>
                         </div>
+                    </div>
+
+                    <form action="/appointments/add" method="post">
+
+                        <!-- Patient dropdown -->
+                        <div class="mb-3" id="patientSection">
+                            <label class="form-label">Patient</label>
+
+                            <!-- Pre-selected patient (locked) -->
+                            <div id="specificPatientDiv"
+                                 th:if="${selectedPatient != null}"
+                                 style="display:none;">
+                                <input type="text" class="form-control bg-light"
+                                       th:value="${selectedPatient.name}" readonly>
+                                <input type="hidden" id="specificPatientId"
+                                       th:value="${selectedPatient.id}">
+                                <small class="text-muted">Booking for this patient only</small>
+                            </div>
+
+                            <!-- All patients dropdown -->
+                            <div id="allPatientsDiv">
+                                <select class="form-select" name="patientId"
+                                        id="patientDropdown" required>
+                                    <option value="">Select Patient</option>
+                                    <option th:each="patient : ${patients}"
+                                            th:value="${patient.id}"
+                                            th:text="${patient.name}"
+                                            th:selected="${selectedPatient != null and patient.id == selectedPatient.id}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Hidden input used when specific patient mode -->
+                            <input type="hidden" name="patientId"
+                                   id="hiddenPatientId" style="display:none;">
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Doctor</label>
-                            <select class="form-select" th:field="*{doctor}">
+                            <select class="form-select" name="doctorId" required>
                                 <option value="">Select Doctor</option>
                                 <option th:each="doctor : ${doctors}"
                                         th:value="${doctor.id}"
@@ -38,20 +93,28 @@
                                 </option>
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Date</label>
-                            <input type="date" class="form-control" th:field="*{appointmentDate}" required>
+                            <input type="date" class="form-control"
+                                   name="appointmentDate" required>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Time</label>
-                            <input type="time" class="form-control" th:field="*{appointmentTime}" required>
+                            <input type="time" class="form-control"
+                                   name="appointmentTime" required>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Notes</label>
-                            <textarea class="form-control" th:field="*{notes}" rows="3"></textarea>
+                            <textarea class="form-control" name="notes" rows="3"></textarea>
                         </div>
+
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-warning">Book Appointment</button>
+                            <button type="submit" class="btn btn-warning">
+                                Book Appointment
+                            </button>
                             <a href="/appointments" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
@@ -60,5 +123,57 @@
         </div>
     </div>
 </div>
+
+<script>
+    const specificPatientDiv = document.getElementById('specificPatientDiv');
+    const allPatientsDiv = document.getElementById('allPatientsDiv');
+    const patientDropdown = document.getElementById('patientDropdown');
+    const hiddenPatientId = document.getElementById('hiddenPatientId');
+    const specificPatientId = document.getElementById('specificPatientId');
+    const btnAll = document.getElementById('btnAll');
+    const btnSpecific = document.getElementById('btnSpecific');
+
+    function showAll() {
+        // Show all patients dropdown
+        if (allPatientsDiv) allPatientsDiv.style.display = 'block';
+        if (specificPatientDiv) specificPatientDiv.style.display = 'none';
+
+        // Enable dropdown, disable hidden input
+        if (patientDropdown) patientDropdown.disabled = false;
+        if (hiddenPatientId) hiddenPatientId.name = '';
+        if (patientDropdown) patientDropdown.name = 'patientId';
+
+        // Toggle buttons
+        if (btnAll) btnAll.classList.add('active');
+        if (btnSpecific) btnSpecific.classList.remove('active');
+    }
+
+    function showSpecific() {
+        // Show only specific patient
+        if (specificPatientDiv) specificPatientDiv.style.display = 'block';
+        if (allPatientsDiv) allPatientsDiv.style.display = 'none';
+
+        // Disable dropdown, use hidden input with specific patient id
+        if (patientDropdown) patientDropdown.disabled = true;
+        if (patientDropdown) patientDropdown.name = '';
+        if (hiddenPatientId && specificPatientId) {
+            hiddenPatientId.value = specificPatientId.value;
+            hiddenPatientId.name = 'patientId';
+            hiddenPatientId.style.display = 'block';
+        }
+
+        // Toggle buttons
+        if (btnSpecific) btnSpecific.classList.add('active');
+        if (btnAll) btnAll.classList.remove('active');
+    }
+
+    // Auto switch to specific patient mode if came from patient history
+    window.onload = function() {
+        if (specificPatientId && specificPatientId.value) {
+            showSpecific();
+        }
+    }
+</script>
+
 </body>
 </html>
