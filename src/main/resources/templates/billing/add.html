@@ -9,6 +9,15 @@
 <nav class="navbar navbar-dark bg-danger">
     <div class="container">
         <a class="navbar-brand fw-bold" href="/">🏥 Hospital MS</a>
+        <div class="navbar-nav ms-auto flex-row align-items-center gap-3">
+            <a class="nav-link text-white" href="/patients">Patients</a>
+            <a class="nav-link text-white" href="/doctors">Doctors</a>
+            <a class="nav-link text-white" href="/appointments">Appointments</a>
+            <a class="nav-link text-white" href="/billing">Billing</a>
+            <form th:action="@{/logout}" method="post" class="mb-0">
+                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+        </div>
     </div>
 </nav>
 <div class="container mt-4">
@@ -17,36 +26,54 @@
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <h4 class="fw-bold mb-4">Create New Bill</h4>
-                    <form th:action="@{/billing/add}" th:object="${bill}" method="post">
+                    <form action="/billing/add" method="post">
+
+                        <!-- Patient field -->
                         <div class="mb-3">
                             <label class="form-label">Patient</label>
-                            <select class="form-select" th:field="*{patient}">
-                                <option value="">Select Patient</option>
-                                <option th:each="patient : ${patients}"
-                                        th:value="${patient.id}"
-                                        th:text="${patient.name}">
-                                </option>
-                            </select>
+                            <div th:if="${selectedPatient != null}">
+                                <input type="text" class="form-control bg-light"
+                                       th:value="${selectedPatient.name}" readonly>
+                                <input type="hidden" name="patientId"
+                                       th:value="${selectedPatient.id}">
+                            </div>
+                            <div th:if="${selectedPatient == null}">
+                                <select class="form-select" name="patientId" required>
+                                    <option value="">Select Patient</option>
+                                    <option th:each="patient : ${patients}"
+                                            th:value="${patient.id}"
+                                            th:text="${patient.name}">
+                                    </option>
+                                </select>
+                            </div>
                         </div>
+
+                        <!-- Appointment field -->
                         <div class="mb-3">
-                            <label class="form-label">Appointment</label>
-                            <select class="form-select" th:field="*{appointment}">
-                                <option value="">Select Appointment (optional)</option>
+                            <label class="form-label">Appointment (optional)</label>
+                            <select class="form-select" name="appointmentId">
+                                <option value="">None</option>
                                 <option th:each="apt : ${appointments}"
                                         th:value="${apt.id}"
-                                        th:text="${apt.patient.name} + ' - Dr.' + ${apt.doctor.name} + ' (' + ${apt.appointmentDate} + ')'">
+                                        th:text="'Dr.' + ${apt.doctor.name} + ' — ' + ${apt.appointmentDate}">
                                 </option>
                             </select>
                         </div>
+
+                        <!-- Amount -->
                         <div class="mb-3">
                             <label class="form-label">Amount (₹)</label>
-                            <input type="number" step="0.01" class="form-control" th:field="*{amount}" required>
+                            <input type="number" step="0.01" class="form-control"
+                                   name="amount" required min="0">
                         </div>
+
+                        <!-- Description -->
                         <div class="mb-3">
                             <label class="form-label">Description</label>
-                            <textarea class="form-control" th:field="*{description}" rows="3"
+                            <textarea class="form-control" name="description" rows="3"
                                       placeholder="e.g. Consultation fee, Lab tests..."></textarea>
                         </div>
+
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-danger">Create Bill</button>
                             <a href="/billing" class="btn btn-secondary">Cancel</a>
