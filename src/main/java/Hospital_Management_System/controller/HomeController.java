@@ -30,6 +30,7 @@ public class HomeController {
         model.addAttribute("totalDoctors", doctorService.getAllDoctors().size());
         model.addAttribute("totalAppointments", appointmentService.getAllAppointments().size());
         model.addAttribute("unpaidBills", billingService.getUnpaidBills().size());
+        model.addAttribute("allAppointments", appointmentService.getAllAppointments());
         return "index";
     }
 }
