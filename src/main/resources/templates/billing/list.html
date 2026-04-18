@@ -58,9 +58,6 @@
                     <a th:if="${!bill.paid}"
                        th:href="@{/billing/pay/{id}(id=${bill.id})}"
                        class="btn btn-sm btn-success">Mark Paid</a>
-                    <a th:href="@{/billing/delete/{id}(id=${bill.id})}"
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('Delete this bill?')">Delete</a>
                 </td>
             </tr>
         </tbody>
