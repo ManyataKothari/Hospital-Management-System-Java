@@ -11,20 +11,20 @@ Billing system
 It follows a layered architecture (Controller → Service → DAO → Model) ensuring clean, maintainable, and scalable code.
 
 Features
-👩‍⚕️ Doctor Management
+ Doctor Management
 
 Add, update, delete, and view doctors
-🧑‍🤝‍🧑 Patient Management
+ Patient Management
 
 Maintain patient records
 Edit and track patient details
-📅 Appointment Scheduling
+ Appointment Scheduling
 
 Book, update, and manage appointments
-💳 Billing System
+ Billing System
 
 Generate and manage patient bills
-🌐 Web Interface
+ Web Interface
 
 User-friendly UI using HTML templates
 Tech Stack
@@ -32,7 +32,7 @@ Backend: Spring Boot (Java)
 Frontend: HTML, Thymeleaf
 Build Tool: Maven
 Architecture: MVC (Model-View-Controller)
-📂 Project Structure
+ Project Structure
 Hospital-Management-System
 │── src/main/java/Hospital_Management_System
 │   ├── controller        # Handles HTTP requests
@@ -49,7 +49,7 @@ Hospital-Management-System
 │
 │── src/test              # Unit Tests
 │── pom.xml               # Maven dependencies
-⚙️ Installation & Setup
+ Installation & Setup
 1️⃣ Clone the Repository
 git clone https://github.com/your-username/hospital-management-system.git
 cd hospital-management-system
@@ -77,22 +77,22 @@ Testing
 Run tests using:
 
 mvn test
-📈 Future Enhancements
+ Future Enhancements
 Authentication & Role-Based Access
 Database integration (MySQL/PostgreSQL)
 REST API support
 Dashboard & analytics
 Email/SMS notifications
-🤝 Contributing
+ Contributing
 Contributions are welcome!
 
 Fork the repository
 Create a new branch
 Commit your changes
 Submit a pull request
-📄 License
+ License
 This project is for academic purposes and can be freely modified.
 
-👩‍💻 Authors
+ Authors
 Manyata Kothari
 Niharika Mathur
