@@ -96,3 +96,4 @@ This project is for academic purposes and can be freely modified.
  Authors
 Manyata Kothari
 Niharika Mathur
+Muskan Sinha
